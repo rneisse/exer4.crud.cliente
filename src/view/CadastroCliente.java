@@ -38,7 +38,7 @@ public class CadastroCliente extends javax.swing.JFrame {
         }
        
         initComponents();
-        DefaultTableModel modeloTableClientes = (DefaultTableModel) jTableCliente.getModel();
+        //DefaultTableModel modeloTableClientes = (DefaultTableModel) jTableCliente.getModel();
     }
 
     /**
@@ -230,6 +230,8 @@ public class CadastroCliente extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        jTableCliente.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTableCliente.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTableCliente.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTableClienteMouseClicked(evt);
@@ -315,35 +317,37 @@ public class CadastroCliente extends javax.swing.JFrame {
         
         clienteController.create(nome, email, cpf, fone, data);
         
-        limpaCampos();       
+        limpaCampos();
+        getListaCliente();
         
     }//GEN-LAST:event_jButtonCadastrarActionPerformed
 
     private void jButtonAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAtualizarActionPerformed
               
         if (jTableCliente.getSelectedRow() != -1){        
+            int id = (int) jTableCliente.getValueAt(jTableCliente.getSelectedRow(), 0) ;
             String nome = jTextFieldNome.getText();
             String email = jTextFieldEmail.getText();
             String cpf = jFormattedTextFieldCpf.getText();
             String fone = jFormattedTextFieldTelefone.getText();
             String data = jFormattedTextFieldDataAniversario.getText();
+          
+            clienteController.update(id, nome, email, cpf, fone, data);
 
-            clienteController.update((int) jTableCliente.getValueAt(jTableCliente.getSelectedRow(), 0), nome, email, cpf, fone, data);
-
-            this.getListaCliente();
-
-            limpaCampos(); 
+            limpaCampos();             
+            getListaCliente(); 
         }
     }//GEN-LAST:event_jButtonAtualizarActionPerformed
 
     private void jButtonExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExcluirActionPerformed
-        
         if (jTableCliente.getSelectedRow() != -1){        
-            clienteController.delete((int) jTableCliente.getValueAt(jTableCliente.getSelectedRow(), 0));
-
-            this.getListaCliente();
+            int id = (int) jTableCliente.getValueAt(jTableCliente.getSelectedRow(), 0) ;
+            clienteController.delete(id);
+           
 
             limpaCampos(); 
+            getListaCliente();
+            
         } else {
             JOptionPane.showMessageDialog(null, "Seleciona um produto para excluir!");
         }
@@ -371,7 +375,7 @@ public class CadastroCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonSairActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        this.getListaCliente();
+       getListaCliente();
     }//GEN-LAST:event_formWindowOpened
 
     private void jTableClienteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableClienteMouseClicked

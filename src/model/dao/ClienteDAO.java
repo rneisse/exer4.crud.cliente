@@ -25,6 +25,7 @@ public class ClienteDAO {
         PreparedStatement stmt = null;
         
         try {
+            con.setAutoCommit(false);
             stmt = con.prepareStatement("INSERT INTO cliente (nome, email, cpf, telefone, dataaniversario) VALUES (?,?,?,?,?)");    
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getEmail());
@@ -33,10 +34,20 @@ public class ClienteDAO {
             stmt.setString(5, cliente.getDataAniversario());
             
             stmt.executeUpdate();
+            
+            con.commit();
+            
             JOptionPane.showMessageDialog(null, "Salvo com sucesso!");
             
         } catch (SQLException ex){
-            JOptionPane.showMessageDialog(null, "Erro ao Salvar: " + ex);
+            
+            try {
+                con.rollback();
+            } catch (SQLException ex1) {
+                JOptionPane.showMessageDialog(null, "Erro ao Salvar: " + ex1);
+            }
+            
+            
         } finally {
             
         }        
@@ -48,13 +59,13 @@ public class ClienteDAO {
         PreparedStatement stmt = null;
         
         try {
-            stmt = con.prepareStatement("UPDATE cliente set nome = ?, email = ? , cpf = ? , telefone = ? , dataaniversario = ? where idcliente");    
-            stmt.setInt(0,cliente.getId());
+            stmt = con.prepareStatement("UPDATE cliente set nome = ?, email = ? , cpf = ? , telefone = ? , dataaniversario = ? where idcliente = ?");    
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getEmail());
             stmt.setString(3, cliente.getCpf());
             stmt.setString(4, cliente.getTelefone());
             stmt.setString(5, cliente.getDataAniversario());
+            stmt.setInt(6,cliente.getId());
             
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");
@@ -62,7 +73,7 @@ public class ClienteDAO {
         } catch (SQLException ex){
             JOptionPane.showMessageDialog(null, "Erro ao atualizar: " + ex);
         } finally {
-            
+           ConnectionFactory.closeConnection(con, stmt);
         }  
         
     }  
@@ -73,8 +84,8 @@ public class ClienteDAO {
         PreparedStatement stmt = null;
         
         try {
-            stmt = con.prepareStatement("DELETE FOM cliente where idcliente");    
-            stmt.setInt(0,cliente.getId());
+            stmt = con.prepareStatement("DELETE FROM cliente where idcliente = ?");    
+            stmt.setInt(1,cliente.getId());
             
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Excluido com sucesso!");
@@ -82,7 +93,7 @@ public class ClienteDAO {
         } catch (SQLException ex){
             JOptionPane.showMessageDialog(null, "Erro ao excluir: " + ex);
         } finally {
-            
+            ConnectionFactory.closeConnection(con, stmt);
         }         
     }
     
@@ -151,11 +162,7 @@ public class ClienteDAO {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
         return listaClientes;        
-    } 
-    
-    
-    
-    
+    }   
     
        
 }
